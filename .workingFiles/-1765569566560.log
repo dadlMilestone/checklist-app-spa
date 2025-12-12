@@ -1,0 +1,63 @@
+Some messages have been moved to the Issues panel.
+Deployment_banner_345.png:1 Failed to load resource: net::ERR_FILE_NOT_FOUND
+index-DfunCdRq.js:1825 appDB upgrade required. Upgrading to version 5...
+index-DfunCdRq.js:8401 GET file:///C:/Users/dadl/repos/others/checklist-app-spa/node_modules/electron/dist/resources/static/info_content/Milestone%20manuals%20and%20guides.html net::ERR_FILE_NOT_FOUND
+includeHTML @ index-DfunCdRq.js:8401
+loadHelpEvents @ index-DfunCdRq.js:9437
+renderHelpPage @ index-DfunCdRq.js:9870
+(anonymous) @ index-DfunCdRq.js:9876
+dispatch @ index-DfunCdRq.js:4838
+elemData.handle @ index-DfunCdRq.js:4725
+index-DfunCdRq.js:8401 GET file:///C:/Users/dadl/repos/others/checklist-app-spa/node_modules/electron/dist/resources/static/info_content/Milestone%20whitepapers%20and%20other%20Milestone%20documents.html net::ERR_FILE_NOT_FOUND
+includeHTML @ index-DfunCdRq.js:8401
+loadHelpEvents @ index-DfunCdRq.js:9437
+renderHelpPage @ index-DfunCdRq.js:9870
+(anonymous) @ index-DfunCdRq.js:9876
+dispatch @ index-DfunCdRq.js:4838
+elemData.handle @ index-DfunCdRq.js:4725
+index-DfunCdRq.js:8401 GET file:///C:/Users/dadl/repos/others/checklist-app-spa/node_modules/electron/dist/resources/static/info_content/Milestone%20eLearning%20courses.html net::ERR_FILE_NOT_FOUND
+includeHTML @ index-DfunCdRq.js:8401
+loadHelpEvents @ index-DfunCdRq.js:9437
+renderHelpPage @ index-DfunCdRq.js:9870
+(anonymous) @ index-DfunCdRq.js:9876
+dispatch @ index-DfunCdRq.js:4838
+elemData.handle @ index-DfunCdRq.js:4725
+index-DfunCdRq.js:8401 GET file:///C:/Users/dadl/repos/others/checklist-app-spa/node_modules/electron/dist/resources/static/info_content/Non-Milestone%20resources.html net::ERR_FILE_NOT_FOUND
+includeHTML @ index-DfunCdRq.js:8401
+loadHelpEvents @ index-DfunCdRq.js:9437
+renderHelpPage @ index-DfunCdRq.js:9870
+(anonymous) @ index-DfunCdRq.js:9876
+dispatch @ index-DfunCdRq.js:4838
+elemData.handle @ index-DfunCdRq.js:4725
+index.html:1 Uncaught (in promise) TypeError: Failed to fetch
+Promise.then (async)
+includeHTML @ index-DfunCdRq.js:8401
+loadHelpEvents @ index-DfunCdRq.js:9437
+renderHelpPage @ index-DfunCdRq.js:9870
+(anonymous) @ index-DfunCdRq.js:9876
+dispatch @ index-DfunCdRq.js:4838
+elemData.handle @ index-DfunCdRq.js:4725
+index.html:1 Uncaught (in promise) TypeError: Failed to fetch
+Promise.then (async)
+includeHTML @ index-DfunCdRq.js:8401
+loadHelpEvents @ index-DfunCdRq.js:9437
+renderHelpPage @ index-DfunCdRq.js:9870
+(anonymous) @ index-DfunCdRq.js:9876
+dispatch @ index-DfunCdRq.js:4838
+elemData.handle @ index-DfunCdRq.js:4725
+index.html:1 Uncaught (in promise) TypeError: Failed to fetch
+Promise.then (async)
+includeHTML @ index-DfunCdRq.js:8401
+loadHelpEvents @ index-DfunCdRq.js:9437
+renderHelpPage @ index-DfunCdRq.js:9870
+(anonymous) @ index-DfunCdRq.js:9876
+dispatch @ index-DfunCdRq.js:4838
+elemData.handle @ index-DfunCdRq.js:4725
+index.html:1 Uncaught (in promise) TypeError: Failed to fetch
+Promise.then (async)
+includeHTML @ index-DfunCdRq.js:8401
+loadHelpEvents @ index-DfunCdRq.js:9437
+renderHelpPage @ index-DfunCdRq.js:9870
+(anonymous) @ index-DfunCdRq.js:9876
+dispatch @ index-DfunCdRq.js:4838
+elemData.handle @ index-DfunCdRq.js:4725

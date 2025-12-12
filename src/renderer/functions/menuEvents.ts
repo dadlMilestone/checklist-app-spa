@@ -6,7 +6,7 @@ import { dbPromise } from '../data/db';
 import { Deployment } from '../models/deployment';
 import { updateDeployment, getItemsByDeploymentId } from './helpers/dbFunctions';
 import { renderChecklist } from './checklistBuilder';
-import {ipcRenderer, shell} from 'electron';
+import { getIpcRenderer, getShell } from './helpers/electronHelper';
 import { showModal } from './modalBuilder';
 import { renderPrintView } from './printViewBuilder';
 import { renderImportDeployment } from './importDeploymentBuilder';
@@ -51,8 +51,11 @@ export const loadPrintMenuEvents = (id:string, context:String) => {
 
     //when clicking print to pdf, send a print to pdf command to execute in the main process
     $('#print-pdf').click(() => {
-            const title = document.getElementById('pdf-title').innerHTML; 
-            ipcRenderer.send('print-to-pdf', title);
+            const title = document.getElementById('pdf-title').innerHTML;
+            const ipcRenderer = getIpcRenderer();
+            if (ipcRenderer) {
+                ipcRenderer.send('print-to-pdf', title);
+            }
     });
 
     //open print options modal on Options click
@@ -61,9 +64,12 @@ export const loadPrintMenuEvents = (id:string, context:String) => {
     });
 
     //when print event signals completion, remove the highlight from Print to PDF menu option
-    ipcRenderer.on('print-done', () => {
-        $('#print-pdf').removeClass('current-menu-item');
-    });
+    const ipcRenderer = getIpcRenderer();
+    if (ipcRenderer) {
+        ipcRenderer.on('print-done', () => {
+            $('#print-pdf').removeClass('current-menu-item');
+        });
+    }
 
     feedbackEvent(); 
     highlightSelectedMenuItems();
@@ -162,13 +168,16 @@ export const exportDeploymentData = async (deployment:Deployment) => {
     //console.log(data);
 
     const encryptedData = encryptDecryptData(data, 'encrypt'); 
-    ipcRenderer.send('export-data', encryptedData, deployment.name);
-    ipcRenderer.on('export-done', () => {
-        if($('#checklist-menu')){
-            $('.menu-item').removeClass('current-menu-item');
-            $('.menu-list').find(`[data-id='${deployment.currentPhaseId}']`).addClass('current-menu-item');
-        }
-    })
+    const ipcRenderer = getIpcRenderer();
+    if (ipcRenderer) {
+        ipcRenderer.send('export-data', encryptedData, deployment.name);
+        ipcRenderer.on('export-done', () => {
+            if($('#checklist-menu')){
+                $('.menu-item').removeClass('current-menu-item');
+                $('.menu-list').find(`[data-id='${deployment.currentPhaseId}']`).addClass('current-menu-item');
+            }
+        });
+    }
     
 }
 
@@ -199,7 +208,10 @@ const generateItemDataForExport = (id:string) => {
 const feedbackEvent = () => {
 
     $('#menu_feedback').on('click', function(){
-        shell.openExternal('mailto:deploymentfeedback@milestone.dk?subject=Milestone%20Deployment%20Assistant%20Feedback');
+        const shell = getShell();
+        if (shell) {
+            shell.openExternal('mailto:deploymentfeedback@milestone.dk?subject=Milestone%20Deployment%20Assistant%20Feedback');
+        }
     })
 
 }

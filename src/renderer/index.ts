@@ -1,7 +1,7 @@
 import { renderMainMenu } from "./functions/menuBuilder";
-import { remote } from 'electron';
 import './css/app.css'
 import { createStaticPath } from "./functions/helpers/createStaticPath";
+import { getAppVersion } from "./functions/helpers/electronHelper";
 
 //set release version here
 export const releaseVersion:string = "XProtect VMS 2020 R3";
@@ -43,7 +43,7 @@ myApp.innerHTML = `
             </div>
             <div id="release-version">${releaseVersion}</div>
             <div id="copyright">&copy; 2019 Milestone Systems, Inc.</div>
-            <div id="build-version">Build version: ${remote.app.getVersion()}</div>
+            <div id="build-version">Build version: ${getAppVersion()}</div>
         <div>
     </main>
 `

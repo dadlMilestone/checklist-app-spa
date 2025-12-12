@@ -2,7 +2,7 @@ import { loadHelpEvents } from "./helpEvents";
 import { scrollToTop } from "./helpers/scrollToTop";
 import { createStaticPath } from "./helpers/createStaticPath";
 import { releaseVersion } from "..";
-import { remote } from "electron";
+import { getRemote } from "./helpers/electronHelper";
 
 let copyrightDate = "2019-2021";
 
@@ -200,7 +200,7 @@ export const renderHelpPage = () => {
                 <div class='help-content last-help-item'>
                     <div>
                         <h3>Milestone Deployment Assistant</h3>
-                        <p>Build version: ${remote.app.getVersion()}</p>
+                        <p>Build version: ${getRemote()?.app.getVersion() ?? 'unknown'}</p>
                         <p>&copy; ${copyrightDate} Milestone Systems, Inc. All rights reserved.</p></br>
                         <p>Milestone Deployment Assistant is made possible by <a href="https://nodejs.org/en/">Node.js</a> and the following open source software:</p>
                         
