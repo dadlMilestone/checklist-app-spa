@@ -37,14 +37,14 @@
   },
   "devDependencies": {
     "@types/electron": "^1.6.10",
-    "@types/jquery": "^3.5.5",
+    "@types/jquery": "^3.5.30",
     "electron": "12.0.0",
     "electron-builder": "22.10.5",
     "electron-webpack": "^2.8.2",
     "electron-webpack-ts": "^4.0.1",
     "html-loader": "^2.1.1",
     "ts-loader": "^9.5.1",
-    "typescript": "^4.2.2",
+    "typescript": "^5.0.0",
     "webpack": "^5.89.0"
   }
 }
