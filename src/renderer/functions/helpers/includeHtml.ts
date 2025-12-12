@@ -6,6 +6,9 @@ export const includeHTML = (): void => {
     const elmnt = z[i];
     //if the info element has an include-html attribute...
     const file = elmnt.getAttribute('include-html');
+    if (!file) {
+      continue; // Skip elements without the attribute
+    }
         //...fetch the file using the attribute path and read its text
         fetch(file)
           .then(response => {
@@ -17,7 +20,7 @@ export const includeHTML = (): void => {
           .then(text => {
             //extract only the body content
             const body = getBody(text);
-            //assign it to the inlcude-html element, remove the attribute, and loop through
+            //assign it to the include-html element, remove the attribute, and loop through
             elmnt.innerHTML = body;
             elmnt.removeAttribute('include-html');
           })
