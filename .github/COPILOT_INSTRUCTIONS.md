@@ -5,39 +5,28 @@
 ### Background
 This application has not been touched for 4 years and we are attempting to modernize it to release a new version with updated content. The alternative would be building a new application from scratch, but reusing this existing codebase is preferred if feasible.
 
-### Current State: PARTIALLY WORKING - MAJOR ISSUES REMAIN
+### Current State: PHASE 1 COMPLETE - BUILD SYSTEM MIGRATED
 
 **What Works:**
-- ✅ `npm run compile` - TypeScript compiles and webpack bundles successfully
-- ✅ Application window launches with correct title "Milestone Deployment Assistant"
-- ✅ Window displays at correct size with proper Electron chrome
+- ✅ `npm run build` - electron-vite builds all three processes (main, preload, renderer)
+- ✅ `npm run dev` - Vite dev server starts with HMR
+- ✅ Application window launches and displays content
+- ✅ Main menu renders, navigation works
+- ✅ IndexedDB initializes correctly (version 5)
+- ✅ UI is interactive (clicking, navigation all work)
+- ✅ 0 production vulnerabilities
 
-**What Does NOT Work:**
-- ❌ **Application content does not render** - Window appears completely blank/white
-- ❌ No UI interaction possible - the renderer process is not displaying content
-- ❌ `npm run dev` - Development mode fails with webpack configuration errors
+**Known Issues (Console Errors - Non-Blocking):**
+1. **Static asset paths incorrect in production mode** - `createStaticPath.ts` returns wrong paths for `info_content/*.html` files
+   - Error: `GET file:///...node_modules/electron/dist/resources/static/info_content/...html net::ERR_FILE_NOT_FOUND`
+   - These are help content files - app still works, help topic content doesn't load
+2. **Missing image** - `Deployment_banner_345.png` not found (cosmetic)
+3. **Fetch errors** - Related to static asset path issues
 
-### Root Cause Analysis Needed
-The blank window indicates the renderer process is failing to load. Possible causes:
-1. Static assets not being found (path resolution issues with `__static`)
-2. HTML template not loading properly
-3. JavaScript errors in renderer process preventing DOM rendering
-4. CSS not loading
-5. electron-webpack's renderer configuration incompatible with webpack 5
-
-### Priority Issues to Resolve
-1. **CRITICAL:** Fix blank window - renderer content must display
-2. **CRITICAL:** Electron 12.0.0 is EOL with security vulnerabilities - must upgrade
-3. **HIGH:** Fix `npm run dev` for development workflow
-4. **MEDIUM:** Resolve remaining 38 dev dependency vulnerabilities if possible
-
-### Decision Point
-If fixing the renderer issues proves too complex due to electron-webpack incompatibilities, consider:
-- Migrating to electron-forge or electron-vite (modern build systems)
-- Upgrading Electron at the same time
-- This would be a larger effort but may be cleaner than patching old tooling
-
----
+**Build System:**
+- ✅ Migrated from electron-webpack → electron-vite
+- ✅ Removed electron-webpack, electron-webpack-ts, ts-loader, webpack dependencies
+- ✅ Vulnerabilities reduced from 38 to 12 (all in Electron 12 itself)
 
 ## Application Overview
 
@@ -465,20 +454,107 @@ interface MilestoneDB extends DBSchema {
 **Node.js Version Tested:** 24.11.1  
 **Build Status:** ⚠️ Compiles but app window is blank - renderer issues
 
-## Next Steps for Future Sessions
+## Current Work: Build System Migration (Option B)
 
-1. **Debug blank window issue:**
-   - Check browser dev tools for JavaScript errors
-   - Verify static assets are being served
-   - Check if index.html template is loading
-   - Inspect network tab for failed resource loads
+**Decision Date:** December 12, 2025  
+**Branch:** `copilot/update-dependencies-approach`  
+**Detailed Plan:** `docs/migration-plan-electron-vite.md`
 
-2. **Consider build system migration:**
-   - electron-webpack is abandoned (last update 2020)
-   - electron-forge or electron-vite are modern alternatives
-   - Would allow cleaner Electron upgrade path
+### Migration Status
 
-3. **Upgrade Electron (required for security):**
-   - Current: 12.0.0 (EOL, multiple CVEs)
-   - Target: Latest LTS (e.g., 28.x or 33.x)
-   - Will require code changes for contextIsolation, sandbox, etc.
+| Phase | Description                        | Status      | Notes                                 |
+| ----- | ---------------------------------- | ----------- | ------------------------------------- |
+| 1     | Setup electron-vite infrastructure | ✅ Complete  | Build and dev server work             |
+| 2     | Fix static asset paths             | 🚧 Pending  | Console errors, help content not loading |
+| 3     | Fix renderer process issues        | ✅ Complete  | App renders, interactive              |
+| 4     | Verify full functionality          | ⚠️ Partial  | Basic nav works, need full test pass  |
+| 5     | Update build & distribution        | 🔲 Pending  | Not started                           |
+
+### Phase 1 Changes Made (December 12, 2025)
+
+**Dependencies Removed:**
+- `electron-webpack`, `electron-webpack-ts`, `ts-loader`, `webpack`
+
+**Dependencies Added:**
+- `electron-vite` ^5.0.0, `vite` ^7.2.7
+
+**Files Created:**
+- `electron.vite.config.ts` - Vite config for main/preload/renderer
+- `src/renderer/index.html` - HTML entry point
+- `src/preload/index.ts` - Preload script (placeholder)
+- `src/renderer/functions/helpers/electronHelper.ts` - Runtime electron module access
+- `src/renderer/types/global.d.ts` - Window.require type declaration
+
+**Files Modified:**
+- `package.json` - Scripts, dependencies
+- `tsconfig.json` - ESNext module, Vite types
+- `src/main/index.ts` - Removed `__static`, added `getStaticPath()` helper
+- `src/renderer/functions/helpers/createStaticPath.ts` - Vite-compatible paths
+- `src/renderer/functions/menuEvents.ts` - Runtime electron imports
+- `src/renderer/functions/helpBuilder.ts` - Runtime electron imports
+- `src/renderer/functions/helpers/openLinksExternally.ts` - Runtime electron imports
+- `src/renderer/index.ts` - Runtime electron imports
+
+**Files Deleted:**
+- `electron-webpack.js` - Old webpack patch
+
+**Key Pattern Established:**
+Vite cannot bundle the `electron` module (it's runtime-only in Electron). Solution:
+```typescript
+// src/renderer/functions/helpers/electronHelper.ts
+export const getIpcRenderer = () => {
+  const electron = getElectron();
+  return electron?.ipcRenderer;
+};
+// Usage: getIpcRenderer()?.send('channel', data)
+```
+
+### Phase 2 TODO: Fix Static Asset Paths
+
+**Problem:** `createStaticPath.ts` returns incorrect paths for static content:
+- Dev mode: Works (Vite serves from `static/` as public directory)
+- Production build: Returns paths to `node_modules/electron/dist/resources/static/`
+
+**Files to Fix:**
+1. `src/renderer/functions/helpers/createStaticPath.ts` - Fix production path resolution
+2. Possibly: `src/renderer/functions/helpers/includeHtml.ts` - May need path updates
+
+**Action Items:**
+- [ ] Debug `createStaticPath.ts` production path resolution
+- [ ] Test with `npm run build && npm run preview` (electron-vite preview mode)
+- [ ] Verify `info_content/*.html` files load in help view
+- [ ] Fix missing `Deployment_banner_345.png`
+
+### Work Assignment
+
+**GitHub Coding Agent (Issues to Create):**
+- Phase 2: Static asset path fixes (after we understand the root cause)
+- Phase 5: Build & distribution config
+
+**Interactive Sessions:**
+- Phase 4: Manual testing of all features
+- Any debugging that requires real-time feedback
+
+---
+
+## Session History
+
+| Date       | Summary                                                                                       |
+| ---------- | --------------------------------------------------------------------------------------------- |
+| 2025-12-12 | Phase 1 complete: Migrated electron-webpack → electron-vite. App renders, dev server works. Console errors for static paths remain (Phase 2). |
+
+---
+
+## Future Work (Option C - Separate Phase)
+
+After build system migration (Option B) is complete and stable:
+
+1. Upgrade Electron 12 → 28+ LTS
+2. Implement `contextIsolation: true`
+3. Add preload script with `contextBridge`
+4. Replace `remote` module with IPC
+5. Enable sandbox
+
+This will eliminate the remaining 12 dev vulnerabilities (all in Electron 12).
+
+---

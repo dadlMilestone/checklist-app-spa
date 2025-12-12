@@ -4,8 +4,19 @@ import fs from 'fs'
 import * as path from 'path'
 import { format as formatUrl } from 'url'
 
-declare const __static: string;
+// electron-vite: Use app.getAppPath() for static assets instead of __static
 const isDevelopment = process.env.NODE_ENV !== 'production'
+
+// Helper to resolve static asset paths
+function getStaticPath(relativePath: string): string {
+  if (isDevelopment) {
+    // In dev, static folder is at project root
+    return path.join(app.getAppPath(), 'static', relativePath)
+  } else {
+    // In production, resources are in the app.asar
+    return path.join(process.resourcesPath, 'static', relativePath)
+  }
+}
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow: BrowserWindow;
@@ -15,13 +26,14 @@ Menu.setApplicationMenu(null);
 
 function createMainWindow() {
   const window = new BrowserWindow({
-    icon: path.join(__static, "./icons/win/favicon.ico"),
+    icon: getStaticPath('icons/win/favicon.ico'),
     minWidth: 800,
     minHeight: 600,
     title: 'Milestone Deployment Assistant',
     titleBarStyle: 'hidden',
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      contextIsolation: false  // Required for Electron 12 with nodeIntegration
     }
   });
 
@@ -35,16 +47,12 @@ function createMainWindow() {
     window.webContents.openDevTools({mode: 'detach'})
   }
 
-  //run webpack server in development 
-  if (isDevelopment) {
-    window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
-  }
-  else {
-    window.loadURL(formatUrl({
-      pathname: path.join(__dirname, 'index.html'),
-      protocol: 'file',
-      slashes: true
-    }))
+  //load the app - electron-vite uses VITE_DEV_SERVER_URL in dev
+  if (isDevelopment && process.env.VITE_DEV_SERVER_URL) {
+    window.loadURL(process.env.VITE_DEV_SERVER_URL)
+  } else {
+    // In production, load from dist/renderer
+    window.loadFile(path.join(__dirname, '../renderer/index.html'))
   }
 
   window.on('closed', () => {
