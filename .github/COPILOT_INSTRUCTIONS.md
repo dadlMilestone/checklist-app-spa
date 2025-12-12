@@ -1,5 +1,44 @@
 # Copilot Instructions for Checklist App SPA
 
+## ⚠️ CRITICAL: Current Project Status (December 2025)
+
+### Background
+This application has not been touched for 4 years and we are attempting to modernize it to release a new version with updated content. The alternative would be building a new application from scratch, but reusing this existing codebase is preferred if feasible.
+
+### Current State: PARTIALLY WORKING - MAJOR ISSUES REMAIN
+
+**What Works:**
+- ✅ `npm run compile` - TypeScript compiles and webpack bundles successfully
+- ✅ Application window launches with correct title "Milestone Deployment Assistant"
+- ✅ Window displays at correct size with proper Electron chrome
+
+**What Does NOT Work:**
+- ❌ **Application content does not render** - Window appears completely blank/white
+- ❌ No UI interaction possible - the renderer process is not displaying content
+- ❌ `npm run dev` - Development mode fails with webpack configuration errors
+
+### Root Cause Analysis Needed
+The blank window indicates the renderer process is failing to load. Possible causes:
+1. Static assets not being found (path resolution issues with `__static`)
+2. HTML template not loading properly
+3. JavaScript errors in renderer process preventing DOM rendering
+4. CSS not loading
+5. electron-webpack's renderer configuration incompatible with webpack 5
+
+### Priority Issues to Resolve
+1. **CRITICAL:** Fix blank window - renderer content must display
+2. **CRITICAL:** Electron 12.0.0 is EOL with security vulnerabilities - must upgrade
+3. **HIGH:** Fix `npm run dev` for development workflow
+4. **MEDIUM:** Resolve remaining 38 dev dependency vulnerabilities if possible
+
+### Decision Point
+If fixing the renderer issues proves too complex due to electron-webpack incompatibilities, consider:
+- Migrating to electron-forge or electron-vite (modern build systems)
+- Upgrading Electron at the same time
+- This would be a larger effort but may be cleaner than patching old tooling
+
+---
+
 ## Application Overview
 
 **Application Name:** Milestone Deployment Assistant 2020 R3  
@@ -203,10 +242,21 @@ This error occurs because webpack 5.24.2 uses MD4 hashing algorithm, which is no
 - Dev: 38 vulnerabilities (all in build tools, not in shipped app)
 
 **Build Status:**
-- ✅ Compiles successfully
-- ✅ Compatible with Node.js 20.19.6
-- ✅ No source code changes required
-- ⚠️ 1 child compilation error (minor, build succeeds)
+- ✅ Compiles successfully with `npm run compile`
+- ✅ Compatible with Node.js 24.11.1
+- ✅ No source code changes required for compilation
+- ❌ **Application window is blank** - renderer content not displaying
+- ❌ `npm run dev` fails with namedModules error
+
+**Additional Fixes Applied (December 2025):**
+
+1. **Added `main` entry to package.json** - Points to `dist/main/main.js`
+2. **Created `electron-webpack.js`** - Custom webpack config patch:
+   - Converts `optimization.namedModules` → `optimization.moduleIds: 'named'`
+   - Converts `optimization.noEmitOnErrors` → `optimization.emitOnErrors`
+3. **Added `electronWebpack` config to package.json** - Points to webpack patch
+4. **Added `overrides` to package.json** - Forces `html-webpack-plugin@5` for webpack 5 compatibility
+5. **Removed `html-loader` from devDependencies** - Uses electron-webpack's bundled v1.3.2
 
 **Remaining Dev Vulnerabilities:**
 All 38 remaining vulnerabilities are in:
@@ -329,29 +379,29 @@ To upgrade electron beyond 12.0.0:
 ## Key Dependencies Reference
 
 ### Runtime Dependencies
-| Package | Version | Purpose |
-|---------|---------|---------|
-| jquery | ^3.7.1 | DOM manipulation, event handling |
-| idb | ^8.0.0 | Promise-based IndexedDB wrapper |
-| js-yaml | ^4.1.0 | YAML parsing for import/export |
-| cssnano | ^7.0.0 | CSS optimization |
-| postcss-svgo | ^7.0.0 | SVG optimization in CSS |
-| svgo | ^4.0.0 | SVG optimization |
+| Package            | Version | Purpose                          |
+| ------------------ | ------- | -------------------------------- |
+| jquery             | ^3.7.1  | DOM manipulation, event handling |
+| idb                | ^8.0.0  | Promise-based IndexedDB wrapper  |
+| js-yaml            | ^4.1.0  | YAML parsing for import/export   |
+| cssnano            | ^7.0.0  | CSS optimization                 |
+| postcss-svgo       | ^7.0.0  | SVG optimization in CSS          |
+| svgo               | ^4.0.0  | SVG optimization                 |
 | source-map-support | ^0.5.21 | Source map support for debugging |
 
 ### Dev Dependencies
-| Package | Version | Purpose |
-|---------|---------|---------|
-| electron | 12.0.0 | Desktop app framework |
-| electron-builder | 22.10.5 | App packager/installer builder |
-| electron-webpack | ^2.8.2 | Webpack integration for Electron |
-| electron-webpack-ts | ^4.0.1 | TypeScript support for electron-webpack |
-| webpack | ^5.89.0 | Module bundler |
-| typescript | ^5.0.0 | TypeScript compiler |
-| ts-loader | ^9.5.1 | TypeScript loader for webpack |
-| @types/jquery | ^3.5.30 | jQuery type definitions |
-| @types/electron | ^1.6.10 | Electron type definitions (deprecated) |
-| html-loader | ^2.1.1 | HTML loader for webpack |
+| Package             | Version | Purpose                                 |
+| ------------------- | ------- | --------------------------------------- |
+| electron            | 12.0.0  | Desktop app framework                   |
+| electron-builder    | 22.10.5 | App packager/installer builder          |
+| electron-webpack    | ^2.8.2  | Webpack integration for Electron        |
+| electron-webpack-ts | ^4.0.1  | TypeScript support for electron-webpack |
+| webpack             | ^5.89.0 | Module bundler                          |
+| typescript          | ^5.0.0  | TypeScript compiler                     |
+| ts-loader           | ^9.5.1  | TypeScript loader for webpack           |
+| @types/jquery       | ^3.5.30 | jQuery type definitions                 |
+| @types/electron     | ^1.6.10 | Electron type definitions (deprecated)  |
+| html-loader         | ^2.1.1  | HTML loader for webpack                 |
 
 ## Application-Specific Notes
 
@@ -412,5 +462,23 @@ interface MilestoneDB extends DBSchema {
 ---
 
 **Last Updated:** December 12, 2025  
-**Node.js Version Tested:** 20.19.6  
-**Build Status:** ✅ Working
+**Node.js Version Tested:** 24.11.1  
+**Build Status:** ⚠️ Compiles but app window is blank - renderer issues
+
+## Next Steps for Future Sessions
+
+1. **Debug blank window issue:**
+   - Check browser dev tools for JavaScript errors
+   - Verify static assets are being served
+   - Check if index.html template is loading
+   - Inspect network tab for failed resource loads
+
+2. **Consider build system migration:**
+   - electron-webpack is abandoned (last update 2020)
+   - electron-forge or electron-vite are modern alternatives
+   - Would allow cleaner Electron upgrade path
+
+3. **Upgrade Electron (required for security):**
+   - Current: 12.0.0 (EOL, multiple CVEs)
+   - Target: Latest LTS (e.g., 28.x or 33.x)
+   - Will require code changes for contextIsolation, sandbox, etc.

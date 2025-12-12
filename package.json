@@ -1,6 +1,7 @@
 {
   "name": "milestone-bpdc",
   "version": "1.0.10",
+  "main": "dist/main/main.js",
   "license": "UNLICENSED",
   "author": "Milestone Systems, Inc.",
   "repository": "https://github.com/sjhammond/checklist-app-spa",
@@ -26,6 +27,14 @@
       "deleteAppDataOnUninstall": "true"
     }
   },
+  "electronWebpack": {
+    "main": {
+      "webpackConfig": "electron-webpack.js"
+    },
+    "renderer": {
+      "webpackConfig": "electron-webpack.js"
+    }
+  },
   "dependencies": {
     "cssnano": "^7.0.0",
     "idb": "^8.0.0",
@@ -42,9 +51,14 @@
     "electron-builder": "22.10.5",
     "electron-webpack": "^2.8.2",
     "electron-webpack-ts": "^4.0.1",
-    "html-loader": "^2.1.1",
+    "html-webpack-plugin": "^5.6.5",
     "ts-loader": "^9.5.1",
     "typescript": "^5.0.0",
     "webpack": "^5.89.0"
+  },
+  "overrides": {
+    "electron-webpack": {
+      "html-webpack-plugin": "^5.6.5"
+    }
   }
 }
