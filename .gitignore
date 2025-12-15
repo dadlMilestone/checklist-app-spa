@@ -4,4 +4,4 @@ node_modules/
 thumbs.db
 workingFiles/
 .vscode/
-.env
+.envrelease/
