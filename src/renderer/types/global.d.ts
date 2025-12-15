@@ -1,9 +1,19 @@
-// Global type declarations for Electron renderer with nodeIntegration
+// Global type declarations for Electron renderer
 
-// Extend Window interface to include require (available in Electron with nodeIntegration)
+// Type definition for the electronAPI exposed via contextBridge
+interface ElectronAPI {
+  getAppVersion: () => Promise<string>;
+  printToPdf: (filename: string) => void;
+  onPrintDone: (callback: () => void) => void;
+  exportData: (data: string, filename: string) => void;
+  onExportDone: (callback: () => void) => void;
+  openExternal: (url: string) => Promise<void>;
+}
+
+// Extend Window interface to include the electronAPI
 declare global {
   interface Window {
-    require: NodeRequire;
+    electronAPI: ElectronAPI;
   }
 }
 

@@ -25,7 +25,7 @@ body {
 }
 
 #app{
-	border-top: 1px solid #b0bdc6;
+	/* border removed - using standard window frame */
 }
 
 section {

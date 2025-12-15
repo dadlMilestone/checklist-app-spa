@@ -1,88 +1,52 @@
-// Electron module helper for Vite compatibility
-// Uses runtime require to avoid Vite trying to bundle electron modules
-
-// Type definitions for electron modules we use
-interface ElectronShell {
-  openExternal(url: string): Promise<void>;
-}
-
-interface ElectronIpcRenderer {
-  send(channel: string, ...args: any[]): void;
-  on(channel: string, listener: (event: any, ...args: any[]) => void): void;
-}
-
-interface ElectronRemote {
-  app: {
-    getVersion(): string;
-  };
-  process: {
-    resourcesPath: string;
-  };
-}
-
-interface ElectronModules {
-  shell: ElectronShell;
-  ipcRenderer: ElectronIpcRenderer;
-  remote: ElectronRemote;
-}
-
-// Cache the electron modules
-let electronModules: ElectronModules | null = null;
+// Electron API helper for accessing contextBridge-exposed APIs
+// All Electron functionality is accessed via window.electronAPI
 
 /**
- * Get electron modules using runtime require
- * This avoids Vite trying to bundle electron at build time
+ * Get the application version from the main process
+ * Returns a promise that resolves to the version string
  */
-export const getElectron = (): ElectronModules | null => {
-  if (electronModules) {
-    return electronModules;
-  }
-
-  if (typeof window !== 'undefined' && typeof window.require === 'function') {
-    try {
-      const electron = window.require('electron');
-      electronModules = {
-        shell: electron.shell,
-        ipcRenderer: electron.ipcRenderer,
-        remote: electron.remote
-      };
-      return electronModules;
-    } catch (e) {
-      console.warn('Failed to load electron modules:', e);
-      return null;
-    }
-  }
-  return null;
-};
-
-/**
- * Get the shell module for opening external links
- */
-export const getShell = (): ElectronShell | null => {
-  return getElectron()?.shell || null;
-};
-
-/**
- * Get ipcRenderer for main process communication
- */
-export const getIpcRenderer = (): ElectronIpcRenderer | null => {
-  return getElectron()?.ipcRenderer || null;
-};
-
-/**
- * Get remote module for accessing main process objects
- */
-export const getRemote = (): ElectronRemote | null => {
-  return getElectron()?.remote || null;
-};
-
-/**
- * Get app version from remote
- */
-export const getAppVersion = (): string => {
+export const getAppVersion = async (): Promise<string> => {
   try {
-    return getRemote()?.app?.getVersion() || '1.0.0';
+    if (window.electronAPI?.getAppVersion) {
+      return await window.electronAPI.getAppVersion();
+    }
+    return '1.0.0';
   } catch {
     return '1.0.0';
   }
+};
+
+/**
+ * Print to PDF - sends print request to main process
+ */
+export const printToPdf = (filename: string): void => {
+  window.electronAPI?.printToPdf(filename);
+};
+
+/**
+ * Register callback for print completion
+ */
+export const onPrintDone = (callback: () => void): void => {
+  window.electronAPI?.onPrintDone(callback);
+};
+
+/**
+ * Export deployment data to file
+ */
+export const exportData = (data: string, filename: string): void => {
+  window.electronAPI?.exportData(data, filename);
+};
+
+/**
+ * Register callback for export completion
+ */
+export const onExportDone = (callback: () => void): void => {
+  window.electronAPI?.onExportDone(callback);
+};
+
+/**
+ * Open external URL in default browser
+ */
+export const openExternal = (url: string): void => {
+  window.electronAPI?.openExternal(url);
 };

@@ -387,16 +387,16 @@ To upgrade electron beyond 12.0.0:
 
 ### Dev Dependencies
 
-| Package             | Version | Purpose                                 |
-| ------------------- | ------- | --------------------------------------- |
-| electron            | 12.0.0  | Desktop app framework (needs upgrade)   |
-| electron-builder    | 22.10.5 | App packager/installer builder          |
-| electron-vite       | ^5.0.0  | Vite integration for Electron           |
-| vite                | ^7.2.7  | Build tool and dev server               |
-| typescript          | ^5.0.0  | TypeScript compiler                     |
-| @types/jquery       | ^3.5.30 | jQuery type definitions                 |
-| @types/electron     | ^1.6.10 | Electron type definitions (deprecated)  |
-| @types/node         | ^25.0.1 | Node.js type definitions                |
+| Package          | Version | Purpose                                |
+| ---------------- | ------- | -------------------------------------- |
+| electron         | 12.0.0  | Desktop app framework (needs upgrade)  |
+| electron-builder | 22.10.5 | App packager/installer builder         |
+| electron-vite    | ^5.0.0  | Vite integration for Electron          |
+| vite             | ^7.2.7  | Build tool and dev server              |
+| typescript       | ^5.0.0  | TypeScript compiler                    |
+| @types/jquery    | ^3.5.30 | jQuery type definitions                |
+| @types/electron  | ^1.6.10 | Electron type definitions (deprecated) |
+| @types/node      | ^25.0.1 | Node.js type definitions               |
 
 ## Application-Specific Notes
 
@@ -468,12 +468,12 @@ interface MilestoneDB extends DBSchema {
 
 ### Migration Status
 
-| Phase | Description                        | Status      | Notes                                 |
-| ----- | ---------------------------------- | ----------- | ------------------------------------- |
-| 1     | Setup electron-vite infrastructure | ✅ Complete  | Build and dev server work             |
-| 2     | Fix static asset paths             | ✅ Complete  | PR #3 merged December 15, 2025        |
-| 3     | Fix renderer process issues        | ✅ Complete  | App renders, interactive              |
-| 4     | Verify full functionality          | ✅ Complete  | Basic functionality verified          |
+| Phase | Description                        | Status     | Notes                                    |
+| ----- | ---------------------------------- | ---------- | ---------------------------------------- |
+| 1     | Setup electron-vite infrastructure | ✅ Complete | Build and dev server work                |
+| 2     | Fix static asset paths             | ✅ Complete | PR #3 merged December 15, 2025           |
+| 3     | Fix renderer process issues        | ✅ Complete | App renders, interactive                 |
+| 4     | Verify full functionality          | ✅ Complete | Basic functionality verified             |
 | 5     | Update build & distribution        | 🔲 Pending  | electron-builder config may need updates |
 
 ### Phase 1 Changes Made (December 12, 2025)
@@ -530,10 +530,10 @@ export const getIpcRenderer = () => {
 
 ## Session History
 
-| Date       | Summary                                                                                       |
-| ---------- | --------------------------------------------------------------------------------------------- |
-| 2025-12-12 | Phase 1 complete: Migrated electron-webpack → electron-vite. App renders, dev server works.   |
-| 2025-12-15 | Phase 2 complete: Merged PR #3 fixing static asset path resolution for dev and production.    |
+| Date       | Summary                                                                                     |
+| ---------- | ------------------------------------------------------------------------------------------- |
+| 2025-12-12 | Phase 1 complete: Migrated electron-webpack → electron-vite. App renders, dev server works. |
+| 2025-12-15 | Phase 2 complete: Merged PR #3 fixing static asset path resolution for dev and production.  |
 
 ---
 
@@ -543,27 +543,27 @@ The build system migration is complete. The next major work item is upgrading El
 
 ### 🔴 High Priority (Security)
 
-| Task | Description | Complexity |
-| ---- | ----------- | ---------- |
-| **Upgrade Electron 12 → 33+ LTS** | Electron 12 is EOL with 9+ high severity CVEs | High |
-| **Upgrade electron-builder** | v22.10.5 has high severity vulnerability, need v26+ | Medium |
-| **Enable context isolation** | Currently using `nodeIntegration: true` which is a security risk | High |
-| **Replace `remote` module** | Deprecated in Electron 12, removed in later versions. Need IPC | High |
+| Task                              | Description                                                      | Complexity |
+| --------------------------------- | ---------------------------------------------------------------- | ---------- |
+| **Upgrade Electron 12 → 33+ LTS** | Electron 12 is EOL with 9+ high severity CVEs                    | High       |
+| **Upgrade electron-builder**      | v22.10.5 has high severity vulnerability, need v26+              | Medium     |
+| **Enable context isolation**      | Currently using `nodeIntegration: true` which is a security risk | High       |
+| **Replace `remote` module**       | Deprecated in Electron 12, removed in later versions. Need IPC   | High       |
 
 ### 🟡 Medium Priority (Code Quality)
 
-| Task | Description | Complexity |
-| ---- | ----------- | ---------- |
-| **Add ESLint + Prettier** | No linting configured | Low |
-| **Add unit tests** | No test framework currently | Medium |
-| **Move dependencies** | `cssnano`, `postcss-svgo`, `svgo` should be devDependencies | Low |
+| Task                      | Description                                                 | Complexity |
+| ------------------------- | ----------------------------------------------------------- | ---------- |
+| **Add ESLint + Prettier** | No linting configured                                       | Low        |
+| **Add unit tests**        | No test framework currently                                 | Medium     |
+| **Move dependencies**     | `cssnano`, `postcss-svgo`, `svgo` should be devDependencies | Low        |
 
 ### 🟢 Low Priority (Nice to Have)
 
-| Task | Description | Complexity |
-| ---- | ----------- | ---------- |
-| **Add GitHub Actions CI** | Automate build/test on PRs | Low |
-| **Add Dependabot** | Automated dependency updates | Low |
+| Task                      | Description                  | Complexity |
+| ------------------------- | ---------------------------- | ---------- |
+| **Add GitHub Actions CI** | Automate build/test on PRs   | Low        |
+| **Add Dependabot**        | Automated dependency updates | Low        |
 
 ### Electron Upgrade Path
 

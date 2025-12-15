@@ -41,11 +41,10 @@
     "svgo": "^4.0.0"
   },
   "devDependencies": {
-    "@types/electron": "^1.6.10",
     "@types/jquery": "^3.5.30",
     "@types/node": "^25.0.1",
-    "electron": "12.0.0",
-    "electron-builder": "22.10.5",
+    "electron": "^39.2.7",
+    "electron-builder": "^26.0.12",
     "electron-vite": "^5.0.0",
     "typescript": "^5.0.0",
     "vite": "^7.2.7"

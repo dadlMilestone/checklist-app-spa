@@ -43,8 +43,16 @@ myApp.innerHTML = `
             </div>
             <div id="release-version">${releaseVersion}</div>
             <div id="copyright">&copy; 2019 Milestone Systems, Inc.</div>
-            <div id="build-version">Build version: ${getAppVersion()}</div>
+            <div id="build-version">Build version: <span id="splash-app-version">loading...</span></div>
         <div>
     </main>
 `
 renderMainMenu();
+
+// Fetch and display the app version asynchronously
+getAppVersion().then(version => {
+    const versionElement = document.getElementById('splash-app-version');
+    if (versionElement) {
+        versionElement.textContent = version;
+    }
+});

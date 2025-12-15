@@ -30,10 +30,13 @@ function createMainWindow() {
     minWidth: 800,
     minHeight: 600,
     title: 'Milestone Deployment Assistant',
-    titleBarStyle: 'hidden',
+    // Use standard frame for proper window controls and dragging
+    frame: true,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false  // Required for Electron 12 with nodeIntegration
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: false, // Required for preload script to access Node.js APIs
+      preload: path.join(__dirname, '../preload/index.js')
     }
   });
 
@@ -88,6 +91,11 @@ app.on('activate', () => {
 // create main BrowserWindow when electron is ready
 app.on('ready', () => {
   mainWindow = createMainWindow()
+})
+
+// IPC handler for getting app version (invoke/handle pattern)
+ipcMain.handle('get-app-version', () => {
+  return app.getVersion()
 })
 
 //print to PDF

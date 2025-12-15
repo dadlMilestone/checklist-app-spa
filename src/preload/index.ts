@@ -1,12 +1,44 @@
 // Preload script for Electron
-// This runs in the renderer process but has access to Node.js APIs
-// For Electron 12 with nodeIntegration: true, this is minimal
-// Future Electron upgrades will require contextBridge here
+// Exposes a secure API to the renderer process via contextBridge
+// This is required for modern Electron with contextIsolation: true
 
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, shell } from 'electron'
 
-// For now, just expose ipcRenderer for IPC communication
-// When we upgrade Electron and enable contextIsolation, 
-// we'll use contextBridge.exposeInMainWorld here
+// Define the API that will be exposed to the renderer
+const electronAPI = {
+  // Get the application version
+  getAppVersion: (): Promise<string> => ipcRenderer.invoke('get-app-version'),
 
-console.log('Preload script loaded')
+  // Print to PDF - send filename, returns when done
+  printToPdf: (filename: string): void => {
+    ipcRenderer.send('print-to-pdf', filename)
+  },
+
+  // Listen for print completion
+  onPrintDone: (callback: () => void): void => {
+    ipcRenderer.on('print-done', () => callback())
+  },
+
+  // Export deployment data
+  exportData: (data: string, filename: string): void => {
+    ipcRenderer.send('export-data', data, filename)
+  },
+
+  // Listen for export completion  
+  onExportDone: (callback: () => void): void => {
+    ipcRenderer.on('export-done', () => callback())
+  },
+
+  // Open external URL in default browser
+  openExternal: (url: string): Promise<void> => {
+    return shell.openExternal(url)
+  }
+}
+
+// Expose the API to the renderer process
+contextBridge.exposeInMainWorld('electronAPI', electronAPI)
+
+// Type declaration for the exposed API (for TypeScript)
+export type ElectronAPI = typeof electronAPI
+
+console.log('Preload script loaded - electronAPI exposed')
