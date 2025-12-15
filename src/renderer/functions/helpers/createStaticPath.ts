@@ -1,32 +1,14 @@
-// Helper to safely get Node.js modules in Electron renderer
-const getNodeModules = () => {
-  if (typeof window !== 'undefined' && typeof window.require === 'function') {
-    try {
-      return {
-        path: window.require('path'),
-        electron: window.require('electron')
-      };
-    } catch {
-      return null;
-    }
-  }
-  return null;
-};
-
 export const createStaticPath = (filepath: string): string => {
+    // Normalize the filepath - remove leading './'
+    const normalizedPath = filepath.replace(/^\.\//, '');
+    
     // In development (Vite dev server), return URL path
+    // Vite serves static files from publicDir at the root
     if (import.meta.env?.DEV) {
-        // Vite serves static from publicDir, strip leading ./
-        return `/${filepath.replace(/^\.\//, '')}`;
+        return `/${normalizedPath}`;
     }
     
-    // In production (Electron), use Node.js path resolution
-    const modules = getNodeModules();
-    if (modules) {
-        const resourcesPath = modules.electron.remote?.process?.resourcesPath || process.resourcesPath;
-        return modules.path.join(resourcesPath, 'static', filepath);
-    }
-    
-    // Fallback
-    return filepath;
+    // In production (Electron), static files are in dist/renderer/
+    // They're in the same directory as index.html, so use relative paths
+    return normalizedPath;
 }
